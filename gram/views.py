@@ -5,7 +5,7 @@ from django.views.generic import CreateView
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib import messages
 
-from .forms import UserCreationForm, ProfileEditForm, CommentForm
+from .forms import UserCreationForm, ProfileEditForm
 
 
 # Create your views here.
@@ -60,14 +60,6 @@ def profile_info(request):
     return render(request, 'profile.html', context)
 
 
-class CommentCreateView(LoginRequiredMixin, CreateView):
-    model = Comment
-    fields = ['author', 'post', 'body']
-
-    def form_valid(self, form):
-        form.instance.author = self.request.user
-        return super().form_valid(form)
-
 
 def profile_edit(request):
     current_user = request.user
@@ -89,19 +81,6 @@ def profile_edit(request):
         'p_form': p_form
     }
     return render(request, 'edit_profile.html', context)
-
-def search_results(request):
-
-    if 'article' in request.GET and request.GET["article"]:
-        name = request.GET.get("article")
-        users= Profile.get_user(name)
-        message = f"{name}"
-
-        return render(request, 'search_results.html',{"message":message,"users": users})
-
-    else:
-        message = "You haven't searched for any term"
-        return render(request, 'search_results.html', {"message": message})
 
 def register(request):
     if request.method == 'POST':
